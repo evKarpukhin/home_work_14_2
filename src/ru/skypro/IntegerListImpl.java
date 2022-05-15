@@ -7,13 +7,43 @@ import ru.skypro.exception.NotFountValueException;
 import java.util.Arrays;
 
 public class IntegerListImpl implements IntegerList {
-    int size = 100_000;
+    final static float increaseArray = 1.5f;
+    int size = 10_000;
     int[] intArray;
+
+
+    public static void quickSort(int[] arr, int begin, int end) {
+        if (begin < end) {
+            int partitionIndex = partition(arr, begin, end);
+            quickSort(arr, begin, partitionIndex - 1);
+            quickSort(arr, partitionIndex + 1, end);
+        }
+    }
+
+    private static int partition(int[] arr, int begin, int end) {
+        int pivot = arr[end];
+        int i = (begin - 1);
+        for (int j = begin; j < end; j++) {
+            if (arr[j] <= pivot) {
+                i++;
+                swapElements(arr, i, j);
+            }
+        }
+        swapElements(arr, i + 1, end);
+        return i + 1;
+    }
 
     private static void swapElements(int[] arr, int indexA, int indexB) {
         int tmp = arr[indexA];
         arr[indexA] = arr[indexB];
         arr[indexB] = tmp;
+    }
+
+
+    public void sortReqursion(int[] arr) {
+        long start = System.currentTimeMillis();
+        quickSort(arr, 1, arr.length-1);
+        System.out.println(System.currentTimeMillis() - start);
     }
 
     //  Сортировка вставкой
@@ -102,21 +132,34 @@ public class IntegerListImpl implements IntegerList {
         return false;
     }
 
+    private void grow() {
+        if (size == intArray.length) {
+            int[] newIntArray = new int[(int) (intArray.length * increaseArray)];
+            for (int i = 0; i < intArray.length; i++) {
+                newIntArray[i] = intArray[i];
+            }
+            intArray = newIntArray;
+        }
+    }
+
+
     @Override
     public int add(int item) {
         if (size >= intArray.length) {
-            throw new BadValueException("Bad value array." + item);
+            //throw new BadValueException("Bad value array." + item);
+            grow();
         }
         return intArray[size++] = item;
     }
 
     @Override
     public int add(int index, int item) {
-        if (index > size || index > intArray.length) {
+        if (index < 0 || index > size) {
             throw new BadIndexException("Bad index array " + index);
         }
 
-        for (int i = size; i > index; i--) {
+        grow();
+        for (int i = size - 1; i > index; i--) {
             intArray[i] = intArray[i - 1];
         }
         intArray[index] = item;
@@ -219,7 +262,7 @@ public class IntegerListImpl implements IntegerList {
             return false;
         }
 
-        int[] intOtherList = ((IntegerListImpl)otherList).intArray;
+        int[] intOtherList = ((IntegerListImpl) otherList).intArray;
         intSortInsert(intArray);
         intSortInsert(intOtherList);
         return Arrays.equals(intArray, intOtherList);

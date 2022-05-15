@@ -17,6 +17,9 @@ public class Main {
         integerList.sortInsert(array2); // 643
         integerList.sortInsert(array3); // 661
 
+        System.out.println("Сортировка рекурсией: Быстрая сортировка");
+        integerList.sortReqursion(array1);
+
         System.out.println("integerList.contains(790) = " + integerList.contains(790));
 /*
         System.out.println("Сортировка выбором");
